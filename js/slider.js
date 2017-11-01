@@ -88,7 +88,7 @@
 				} else {
 
 					_tmp = x / 100;
-					_x = this.defaults.min + (Math.abs(this.defaults.min * (-1) + this.defaults.max) * _tmp);
+					_x = Math.round((this.defaults.min + (Math.abs(this.defaults.min * (-1) + this.defaults.max) * _tmp)) / this.defaults.step) * this.defaults.step;
 
 				}
 
@@ -117,7 +117,23 @@
 
 			}
 
-			this.defaults.callback(parseInt(_x));
+			if (x <= 0) {
+				_x = this.defaults.min;
+			}
+			else if (x >= 100) {
+				_x = this.defaults.max;
+			}
+
+			var _t = this.defaults.step.toString().split('.')[1];
+			if (_t) {
+				_t = _t.length;
+			}
+
+			var rounded = function (number) {
+				return +number.toFixed(_t ? _t : 1);
+			}
+
+			this.defaults.callback(rounded(_x));
 
 		},
 
