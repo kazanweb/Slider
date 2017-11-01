@@ -276,6 +276,15 @@ dfn[title] {
   margin: 200px auto;
   position: relative;
 }
+.slider:before {
+  position: absolute;
+  left: 70%;
+  bottom: 100%;
+  height: 10px;
+  width: 1px;
+  background: #000;
+  content: '';
+}
 .slider__handle {
   width: 30px;
   height: 30px;

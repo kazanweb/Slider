@@ -21,8 +21,13 @@
 		this.defaults = this.extend({
 			element: '',
 			min: 0,
-			max: 100,
+			max: 1000,
+			border: null,
+			borderRange: null,
 			range: false,
+			step: 1,
+			beforeBorderStep: null,
+			afterBorderStep: null,
 			callback: function () { }
 		}, opts);
 
@@ -62,19 +67,57 @@
 		setValues: function (x) {
 
 			var _x;
+			var _tmp;
 
-			if (this.defaults.min > this.defaults.max) {
+			if (this.defaults.min < this.defaults.max) {
 
-				_x = this.defaults.min - (Math.abs(this.defaults.min * (-1) + this.defaults.max) * (x / 100));
+				if (this.defaults.borderRange && this.defaults.border && (this.defaults.border > this.defaults.min && this.defaults.border < this.defaults.max)) {
+
+					if (x <= this.defaults.borderRange) {
+
+						_tmp = x / this.defaults.borderRange;
+						_x = this.defaults.min + (Math.abs(this.defaults.min * (-1) + this.defaults.border) * _tmp);
+
+					} else {
+
+						_tmp = ((x - this.defaults.borderRange) / (100 - this.defaults.borderRange));
+						_x = this.defaults.border + (Math.abs(this.defaults.border * (-1) + this.defaults.max) * _tmp);
+
+					}
+
+				} else {
+
+					_tmp = x / 100;
+					_x = this.defaults.min + (Math.abs(this.defaults.min * (-1) + this.defaults.max) * _tmp);
+
+				}
+
+			} else {
+
+				if (this.defaults.borderRange && this.defaults.border && (this.defaults.border > this.defaults.min && this.defaults.border < this.defaults.max)) {
+
+					if (x <= this.defaults.borderRange) {
+
+						_tmp = x / this.defaults.borderRange;
+						_x = this.defaults.min - (Math.abs(this.defaults.min * (-1) + this.defaults.border) * _tmp);
+
+					} else {
+
+						_tmp = ((x - this.defaults.borderRange) / (100 - this.defaults.borderRange));
+						_x = this.defaults.border - (Math.abs(this.defaults.border * (-1) + this.defaults.max) * _tmp);
+
+					}
+
+				} else {
+
+					_tmp = x / 100;
+					_x = this.defaults.min - (Math.abs(this.defaults.min * (-1) + this.defaults.max) * _tmp);
+
+				}
 
 			}
-			else {
 
-				_x = this.defaults.min + (Math.abs(this.defaults.min * (-1) + this.defaults.max) * (x / 100));
-
-			}
-
-			this.defaults.callback(_x);
+			this.defaults.callback(parseInt(_x));
 
 		},
 

@@ -5,7 +5,10 @@ $(document).ready(function () {
 	new Slider({
 		element: document.querySelector('.js-slider'),
 		min: 0,
-		max: 10000,
+		max: 200,
+		step: 10,
+		// borderRange: 70,
+		// border: 25,
 		callback: function (x) {
 			input.value = x;
 		}
