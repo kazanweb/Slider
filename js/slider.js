@@ -22,12 +22,12 @@
 			element: '',
 			min: 0,
 			max: 1000,
-			border: null,
-			borderRange: null,
+			point: null,
+			divisionPer: null,
 			range: false,
 			step: 1,
-			beforeBorderStep: null,
-			afterBorderStep: null,
+			beforePointStep: null,
+			afterPointStep: null,
 			callback: function () { }
 		}, opts);
 
@@ -60,7 +60,7 @@
 
 		getValues: function () {
 
-			this.values.width = this.tags.slider.offsetWidth;
+			this.values.size = this.tags.slider.offsetWidth;
 
 		},
 
@@ -170,7 +170,7 @@
 
 				e.preventDefault();
 
-				x = ((e.pageX - shiftX) / obj.values.width) * 100;
+				x = ((e.pageX - shiftX) / obj.values.size) * 100;
 
 				if (x < 0) {
 					x = 0;
