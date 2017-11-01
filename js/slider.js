@@ -59,7 +59,22 @@
 
 		},
 
-		setValues: function () {
+		setValues: function (x) {
+
+			var _x;
+
+			if (this.defaults.min > this.defaults.max) {
+
+				_x = this.defaults.min - (Math.abs(this.defaults.min * (-1) + this.defaults.max) * (x / 100));
+
+			}
+			else {
+
+				_x = this.defaults.min + (Math.abs(this.defaults.min * (-1) + this.defaults.max) * (x / 100));
+
+			}
+
+			this.defaults.callback(_x);
 
 		},
 
@@ -106,7 +121,7 @@
 
 				element.style.left = x + '%';
 
-				obj.defaults.callback(x);
+				obj.setValues(x);
 
 			}, false);
 
