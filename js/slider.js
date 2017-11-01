@@ -22,7 +22,8 @@
 			element: '',
 			min: 0,
 			max: 100,
-			range: false
+			range: false,
+			callback: function () { }
 		}, opts);
 
 		if (!this.defaults.element) {
@@ -104,6 +105,8 @@
 				}
 
 				element.style.left = x + '%';
+
+				obj.defaults.callback(x);
 
 			}, false);
 
