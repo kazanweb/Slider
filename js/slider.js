@@ -28,7 +28,8 @@
 			step: 1,
 			beforePointStep: null,
 			afterPointStep: null,
-			callback: function () { }
+			create: function () { },
+			slide: function () { }
 		}, opts);
 
 		if (!this.defaults.element) {
@@ -36,6 +37,7 @@
 		}
 
 		this.init();
+
 		return this;
 
 	}
@@ -48,6 +50,10 @@
 			this.reinit();
 			this.events(this.tags.handleLeft, 'triggerLeft');
 
+			this.defaults.create.call(this, this.tags.slider, this.defaults, this.tags.handleLeft, mobileDetect);
+
+			return this;
+
 		},
 
 		createDOM: function () {
@@ -56,11 +62,23 @@
 			this.tags.slider = this.defaults.element;
 			this.tags.handleLeft = createElement('slider__handle slider__handle_left', this.tags.slider);
 
+			delete this.defaults.element;
+
+			return this;
+
 		},
 
 		getValues: function () {
 
 			this.values.size = this.tags.slider.offsetWidth;
+
+			return this;
+
+		},
+
+		_setTrack: function (val) {
+
+			return this;
 
 		},
 
@@ -71,17 +89,17 @@
 
 			if (this.defaults.min < this.defaults.max) {
 
-				if (this.defaults.borderRange && this.defaults.border && (this.defaults.border > this.defaults.min && this.defaults.border < this.defaults.max)) {
+				if (this.defaults.divisionPer && this.defaults.point && (this.defaults.point > this.defaults.min && this.defaults.point < this.defaults.max)) {
 
-					if (x <= this.defaults.borderRange) {
+					if (x <= this.defaults.divisionPer) {
 
-						_tmp = x / this.defaults.borderRange;
-						_x = this.defaults.min + (Math.abs(this.defaults.min * (-1) + this.defaults.border) * _tmp);
+						_tmp = x / this.defaults.divisionPer;
+						_x = Math.round((this.defaults.min + (Math.abs(this.defaults.min * (-1) + this.defaults.point) * _tmp)) / this.defaults.beforePointStep) * this.defaults.beforePointStep;
 
 					} else {
 
-						_tmp = ((x - this.defaults.borderRange) / (100 - this.defaults.borderRange));
-						_x = this.defaults.border + (Math.abs(this.defaults.border * (-1) + this.defaults.max) * _tmp);
+						_tmp = ((x - this.defaults.divisionPer) / (100 - this.defaults.divisionPer));
+						_x = Math.round((this.defaults.point + (Math.abs(this.defaults.point * (-1) + this.defaults.max) * _tmp)) / this.defaults.beforePointStep) * this.defaults.beforePointStep;
 
 					}
 
@@ -94,24 +112,24 @@
 
 			} else {
 
-				if (this.defaults.borderRange && this.defaults.border && (this.defaults.border > this.defaults.min && this.defaults.border < this.defaults.max)) {
+				if (this.defaults.divisionPer && this.defaults.point && (this.defaults.point > this.defaults.min && this.defaults.point < this.defaults.max)) {
 
-					if (x <= this.defaults.borderRange) {
+					if (x <= this.defaults.divisionPer) {
 
-						_tmp = x / this.defaults.borderRange;
-						_x = this.defaults.min - (Math.abs(this.defaults.min * (-1) + this.defaults.border) * _tmp);
+						_tmp = x / this.defaults.divisionPer;
+						_x = Math.round((this.defaults.min - (Math.abs(this.defaults.min * (-1) + this.defaults.point) * _tmp)) / this.defaults.beforePointStep) * this.defaults.beforePointStep;
 
 					} else {
 
-						_tmp = ((x - this.defaults.borderRange) / (100 - this.defaults.borderRange));
-						_x = this.defaults.border - (Math.abs(this.defaults.border * (-1) + this.defaults.max) * _tmp);
+						_tmp = ((x - this.defaults.divisionPer) / (100 - this.defaults.divisionPer));
+						_x = Math.round((this.defaults.point - (Math.abs(this.defaults.point * (-1) + this.defaults.max) * _tmp)) / this.defaults.afterPointStep) * this.defaults.afterPointStep;
 
 					}
 
 				} else {
 
 					_tmp = x / 100;
-					_x = this.defaults.min - (Math.abs(this.defaults.min * (-1) + this.defaults.max) * _tmp);
+					_x = Math.round((this.defaults.min - (Math.abs(this.defaults.min * (-1) + this.defaults.max) * _tmp)) / this.defaults.step) * this.defaults.step;
 
 				}
 
@@ -133,14 +151,19 @@
 				return +number.toFixed(_t ? _t : 1);
 			}
 
-			this.defaults.callback(rounded(_x));
+			this.defaults.value = rounded(_x);
+			this.defaults.slide(rounded(_x));
+
+			return this;
 
 		},
 
 		reinit: function () {
 
 			this.getValues();
-			this.setValues();
+			this.setValues(0);
+
+			return this;
 
 		},
 
@@ -150,19 +173,22 @@
 			this.values[trigger] = false;
 			var x;
 			var shiftX;
+			var eventsStart = mobileDetect ? "touchstart" : "mousedown";
+			var eventsMove = mobileDetect ? "touchmove" : "mousemove";
+			var eventsEnd = mobileDetect ? "touchend" : "mouseup";
 
 			element.addEventListener('dragstart', function () {
 				return false;
 			});
 
-			element.addEventListener('mousedown', function (e) {
+			element.addEventListener(eventsStart, function (e) {
 
 				obj.values[trigger] = true;
-				shiftX = e.pageX - this.offsetLeft - (this.offsetWidth / 2);
+				shiftX = (mobileDetect ? e.touches[0].pageX : e.pageX) - this.offsetLeft - (this.offsetWidth / 2);
 
 			}, false);
 
-			document.addEventListener('mousemove', function (e) {
+			document.addEventListener(eventsMove, function (e) {
 
 				if (!obj.values[trigger]) {
 					return false;
@@ -170,7 +196,7 @@
 
 				e.preventDefault();
 
-				x = ((e.pageX - shiftX) / obj.values.size) * 100;
+				x = (((mobileDetect ? e.touches[0].pageX : e.pageX) - shiftX) / obj.values.size) * 100;
 
 				if (x < 0) {
 					x = 0;
@@ -184,11 +210,13 @@
 
 			}, false);
 
-			document.addEventListener('mouseup', function () {
+			document.addEventListener(eventsEnd, function () {
 
 				obj.values[trigger] = false;
 
 			}, false);
+
+			return this;
 
 		},
 

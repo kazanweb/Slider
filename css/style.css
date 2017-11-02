@@ -286,19 +286,37 @@ dfn[title] {
   content: '';
 }
 .slider__handle {
-  width: 30px;
-  height: 30px;
-  margin: -9px 0 0 -15px;
   position: absolute;
   left: 0;
-  top: 0;
+  height: 30px;
+  bottom: 15px;
   cursor: pointer;
+  -webkit-transform: translate(-50%, 0);
+          transform: translate(-50%, 0);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  background: #c70d0d;
 }
-.slider__handle:after {
-  content: '';
-  display: block;
+.slider__handle-minus {
+  width: 30px;
   height: 100%;
-  width: 100%;
-  background: #2e8040;
-  border-radius: 50%;
+  background: #000;
+  position: absolute;
+  left: -30px;
+  top: 0;
+}
+.slider__handle-plus {
+  width: 30px;
+  height: 100%;
+  background: #000;
+  position: absolute;
+  right: -30px;
+  top: 0;
+}
+.slider__handle-text {
+  padding: 3px 10px;
 }

@@ -18,22 +18,38 @@
 	}
 
 	&__handle {
-		width: 30px;
-		height: 30px;
-		margin: -9px 0 0 -15px;
 		position: absolute;
 		left: 0;
-		top: 0;
+		height: 30px;
+		bottom: 15px;
 		cursor: pointer;
+		transform: translate(-50%, 0);
+		display: flex;
+		align-items: center;
+		background: rgb(199, 13, 13);
 
-		&:after {
-			content: '';
-			display: block;
+		&-minus {
+			width: 30px;
 			height: 100%;
-			width: 100%;
-			background: rgb(46, 128, 64);
-			border-radius: 50%;
+			background: #000;
+			position: absolute;
+			left: -30px;
+			top: 0;
 		}
+
+		&-plus {
+			width: 30px;
+			height: 100%;
+			background: #000;
+			position: absolute;
+			right: -30px;
+			top: 0;
+		}
+
+		&-text {
+			padding: 3px 10px;
+		}
+
 		&_left {
 
 		}
