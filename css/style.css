@@ -291,8 +291,7 @@ dfn[title] {
   height: 30px;
   bottom: 15px;
   cursor: pointer;
-  -webkit-transform: translate(-50%, 0);
-          transform: translate(-50%, 0);
+  margin-left: -10px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;

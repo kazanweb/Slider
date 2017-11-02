@@ -20,14 +20,17 @@
 
 		this.defaults = this.extend({
 			element: '',
+			mainClass: 'slider',
 			min: 0,
 			max: 1000,
-			point: null,
-			divisionPer: null,
 			range: false,
 			step: 1,
-			beforePointStep: null,
-			afterPointStep: null,
+			point: null,
+			divisions: null,
+			beforeDivisionsStep: null,
+			afterDivisionsStep: null,
+			beforeClick: null,
+			afterClick: null,
 			create: function () { },
 			slide: function () { }
 		}, opts);
@@ -47,10 +50,11 @@
 		init: function () {
 
 			this.createDOM();
-			this.reinit();
-			this.events(this.tags.handleLeft, 'triggerLeft');
 
 			this.defaults.create.call(this, this.tags.slider, this.defaults, this.tags.handleLeft, mobileDetect);
+
+			this.reinit();
+			this.events(this.tags.handleLeft, 'triggerLeft');
 
 			return this;
 
@@ -60,7 +64,7 @@
 
 			this.tags = {};
 			this.tags.slider = this.defaults.element;
-			this.tags.handleLeft = createElement('slider__handle slider__handle_left', this.tags.slider);
+			this.tags.handleLeft = createElement(this.defaults.mainClass + '__handle ' + this.defaults.mainClass + '__handle_left', this.tags.slider);
 
 			delete this.defaults.element;
 
@@ -76,7 +80,29 @@
 
 		},
 
-		_setTrack: function (val) {
+		setValuesOutSide: function (trigger) {
+
+			if (trigger) {
+				if (this.defaults.divisions) {
+					if (this.defaults.value < this.defaults.point) {
+						this.defaults.value = this.defaults.value + this.defaults.beforeClick;
+					} else {
+						this.defaults.value = this.defaults.value + this.defaults.afterClick;
+					}
+				} else {
+					this.defaults.value = this.defaults.value + 1;
+				}
+			} else {
+				if (this.defaults.divisions) {
+					if (this.defaults.value >= this.defaults.point) {
+						this.defaults.value = this.defaults.value - this.defaults.afterClick;
+					} else {
+						this.defaults.value = this.defaults.value - this.defaults.beforeClick;
+					}
+				} else {
+					this.defaults.value = this.defaults.value - 1;
+				}
+			}
 
 			return this;
 
@@ -89,17 +115,17 @@
 
 			if (this.defaults.min < this.defaults.max) {
 
-				if (this.defaults.divisionPer && this.defaults.point && (this.defaults.point > this.defaults.min && this.defaults.point < this.defaults.max)) {
+				if (this.defaults.divisions && this.defaults.point && (this.defaults.point > this.defaults.min && this.defaults.point < this.defaults.max)) {
 
-					if (x <= this.defaults.divisionPer) {
+					if (x <= this.defaults.divisions) {
 
-						_tmp = x / this.defaults.divisionPer;
-						_x = Math.round((this.defaults.min + (Math.abs(this.defaults.min * (-1) + this.defaults.point) * _tmp)) / this.defaults.beforePointStep) * this.defaults.beforePointStep;
+						_tmp = x / this.defaults.divisions;
+						_x = Math.round((this.defaults.min + (Math.abs(this.defaults.min * (-1) + this.defaults.point) * _tmp)) / this.defaults.beforeDivisionsStep) * this.defaults.beforeDivisionsStep;
 
 					} else {
 
-						_tmp = ((x - this.defaults.divisionPer) / (100 - this.defaults.divisionPer));
-						_x = Math.round((this.defaults.point + (Math.abs(this.defaults.point * (-1) + this.defaults.max) * _tmp)) / this.defaults.beforePointStep) * this.defaults.beforePointStep;
+						_tmp = ((x - this.defaults.divisions) / (100 - this.defaults.divisions));
+						_x = Math.round((this.defaults.point + (Math.abs(this.defaults.point * (-1) + this.defaults.max) * _tmp)) / this.defaults.beforeDivisionsStep) * this.defaults.beforeDivisionsStep;
 
 					}
 
@@ -112,17 +138,17 @@
 
 			} else {
 
-				if (this.defaults.divisionPer && this.defaults.point && (this.defaults.point > this.defaults.min && this.defaults.point < this.defaults.max)) {
+				if (this.defaults.divisions && this.defaults.point && (this.defaults.point > this.defaults.min && this.defaults.point < this.defaults.max)) {
 
-					if (x <= this.defaults.divisionPer) {
+					if (x <= this.defaults.divisions) {
 
-						_tmp = x / this.defaults.divisionPer;
-						_x = Math.round((this.defaults.min - (Math.abs(this.defaults.min * (-1) + this.defaults.point) * _tmp)) / this.defaults.beforePointStep) * this.defaults.beforePointStep;
+						_tmp = x / this.defaults.divisions;
+						_x = Math.round((this.defaults.min - (Math.abs(this.defaults.min * (-1) + this.defaults.point) * _tmp)) / this.defaults.beforeDivisionsStep) * this.defaults.beforeDivisionsStep;
 
 					} else {
 
-						_tmp = ((x - this.defaults.divisionPer) / (100 - this.defaults.divisionPer));
-						_x = Math.round((this.defaults.point - (Math.abs(this.defaults.point * (-1) + this.defaults.max) * _tmp)) / this.defaults.afterPointStep) * this.defaults.afterPointStep;
+						_tmp = ((x - this.defaults.divisions) / (100 - this.defaults.divisions));
+						_x = Math.round((this.defaults.point - (Math.abs(this.defaults.point * (-1) + this.defaults.max) * _tmp)) / this.defaults.afterDivisionsStep) * this.defaults.afterDivisionsStep;
 
 					}
 
@@ -152,7 +178,7 @@
 			}
 
 			this.defaults.value = rounded(_x);
-			this.defaults.slide(rounded(_x));
+			this.defaults.slide(rounded(_x), this.defaults, this.tags.handleLeft);
 
 			return this;
 
@@ -183,6 +209,7 @@
 
 			element.addEventListener(eventsStart, function (e) {
 
+				e.stopPropagation();
 				obj.values[trigger] = true;
 				shiftX = (mobileDetect ? e.touches[0].pageX : e.pageX) - this.offsetLeft - (this.offsetWidth / 2);
 
@@ -195,6 +222,7 @@
 				}
 
 				e.preventDefault();
+				e.stopPropagation();
 
 				x = (((mobileDetect ? e.touches[0].pageX : e.pageX) - shiftX) / obj.values.size) * 100;
 
@@ -210,11 +238,31 @@
 
 			}, false);
 
-			document.addEventListener(eventsEnd, function () {
+			document.addEventListener(eventsEnd, function (e) {
 
+				e.stopPropagation();
 				obj.values[trigger] = false;
 
 			}, false);
+
+			this.tags.slider.addEventListener(eventsEnd, function (e) {
+
+				e.stopPropagation();
+				obj.values[trigger] = false;
+
+				x = (((mobileDetect ? e.touches[0].pageX : e.pageX) - obj.tags.slider.getBoundingClientRect().left) / obj.values.size) * 100;
+
+				if (x < 0) {
+					x = 0;
+				} else if (x > 100) {
+					x = 100;
+				}
+
+				element.style.left = x + '%';
+
+				obj.setValues(x);
+
+			});
 
 			return this;
 
