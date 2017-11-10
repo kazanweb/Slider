@@ -23,6 +23,7 @@
 			mainClass: 'slider',
 			min: 0,
 			max: 1000,
+			value: 0,
 			range: false,
 			step: 1,
 			point: null,
@@ -57,6 +58,7 @@
 
 			this.reinit();
 			this.events(this.tags.handleLeft, 'triggerLeft');
+			this.setValuesOutSide(this.defaults.value);
 
 			return this;
 
@@ -194,8 +196,6 @@
 		reinit: function () {
 
 			this.getValues();
-			this.setValues(0);
-
 			return this;
 
 		},
