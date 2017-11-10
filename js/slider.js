@@ -26,11 +26,13 @@
 			range: false,
 			step: 1,
 			point: null,
-			divisions: null,
-			beforeDivisionsStep: null,
-			afterDivisionsStep: null,
-			beforeClick: null,
-			afterClick: null,
+			division: null,
+			beforeDivisionStep: 1,
+			afterDivisionStep: 1,
+			handleMinus: null,
+			handlePlus: null,
+			beforeOutSideClickStep: 1,
+			afterOutSideClickStep: 1,
 			create: function () { },
 			slide: function () { }
 		}, opts);
@@ -65,6 +67,7 @@
 			this.tags = {};
 			this.tags.slider = this.defaults.element;
 			this.tags.handleLeft = createElement(this.defaults.mainClass + '__handle ' + this.defaults.mainClass + '__handle_left', this.tags.slider);
+			this.tags.handleRange = createElement(this.defaults.mainClass + '__range ', this.tags.slider);
 
 			delete this.defaults.element;
 
@@ -80,30 +83,34 @@
 
 		},
 
-		setValuesOutSide: function (trigger) {
+		setValuesOutSide: function (value, trigger) {
 
-			if (trigger) {
-				if (this.defaults.divisions) {
-					if (this.defaults.value < this.defaults.point) {
-						this.defaults.value = this.defaults.value + this.defaults.beforeClick;
-					} else {
-						this.defaults.value = this.defaults.value + this.defaults.afterClick;
-					}
+			var _x;
+			this.defaults.value = value;
+
+			if (this.defaults.point && this.defaults.division) {
+
+				if (this.defaults.value <= this.defaults.point) {
+					_x = this.defaults.value / this.defaults.point * this.defaults.division;
 				} else {
-					this.defaults.value = this.defaults.value + 1;
+					_x = (((((this.defaults.value - this.defaults.point) / (this.defaults.max - this.defaults.point)) * 100) / 100) * this.defaults.division) + this.defaults.division;
 				}
 			} else {
-				if (this.defaults.divisions) {
-					if (this.defaults.value >= this.defaults.point) {
-						this.defaults.value = this.defaults.value - this.defaults.afterClick;
-					} else {
-						this.defaults.value = this.defaults.value - this.defaults.beforeClick;
-					}
-				} else {
-					this.defaults.value = this.defaults.value - 1;
-				}
+				_x = (this.defaults.value / this.defaults.max) * 100;
 			}
 
+			if (this.defaults.value <= this.defaults.min) {
+				_x = 0;
+				this.defaults.value = this.defaults.min;
+			} else if (this.defaults.value >= this.defaults.max) {
+				_x = 100;
+				this.defaults.value = this.defaults.max;
+			}
+
+			this.values[trigger] = false;
+			this.tags.handleLeft.style.left = _x + '%';
+
+			this.defaults.slide(this.defaults.value, this.defaults, this.tags.handleLeft);
 			return this;
 
 		},
@@ -115,17 +122,17 @@
 
 			if (this.defaults.min < this.defaults.max) {
 
-				if (this.defaults.divisions && this.defaults.point && (this.defaults.point > this.defaults.min && this.defaults.point < this.defaults.max)) {
+				if (this.defaults.division && this.defaults.point && (this.defaults.point > this.defaults.min && this.defaults.point < this.defaults.max)) {
 
-					if (x <= this.defaults.divisions) {
+					if (x <= this.defaults.division) {
 
-						_tmp = x / this.defaults.divisions;
-						_x = Math.round((this.defaults.min + (Math.abs(this.defaults.min * (-1) + this.defaults.point) * _tmp)) / this.defaults.beforeDivisionsStep) * this.defaults.beforeDivisionsStep;
+						_tmp = x / this.defaults.division;
+						_x = Math.round((this.defaults.min + (Math.abs(this.defaults.min * (-1) + this.defaults.point) * _tmp)) / this.defaults.beforeDivisionStep) * this.defaults.beforeDivisionStep;
 
 					} else {
 
-						_tmp = ((x - this.defaults.divisions) / (100 - this.defaults.divisions));
-						_x = Math.round((this.defaults.point + (Math.abs(this.defaults.point * (-1) + this.defaults.max) * _tmp)) / this.defaults.beforeDivisionsStep) * this.defaults.beforeDivisionsStep;
+						_tmp = ((x - this.defaults.division) / (100 - this.defaults.division));
+						_x = Math.round((this.defaults.point + (Math.abs(this.defaults.point * (-1) + this.defaults.max) * _tmp)) / this.defaults.beforeDivisionStep) * this.defaults.beforeDivisionStep;
 
 					}
 
@@ -138,17 +145,17 @@
 
 			} else {
 
-				if (this.defaults.divisions && this.defaults.point && (this.defaults.point > this.defaults.min && this.defaults.point < this.defaults.max)) {
+				if (this.defaults.division && this.defaults.point && (this.defaults.point > this.defaults.min && this.defaults.point < this.defaults.max)) {
 
-					if (x <= this.defaults.divisions) {
+					if (x <= this.defaults.division) {
 
-						_tmp = x / this.defaults.divisions;
-						_x = Math.round((this.defaults.min - (Math.abs(this.defaults.min * (-1) + this.defaults.point) * _tmp)) / this.defaults.beforeDivisionsStep) * this.defaults.beforeDivisionsStep;
+						_tmp = x / this.defaults.division;
+						_x = Math.round((this.defaults.min - (Math.abs(this.defaults.min * (-1) + this.defaults.point) * _tmp)) / this.defaults.beforeDivisionStep) * this.defaults.beforeDivisionStep;
 
 					} else {
 
-						_tmp = ((x - this.defaults.divisions) / (100 - this.defaults.divisions));
-						_x = Math.round((this.defaults.point - (Math.abs(this.defaults.point * (-1) + this.defaults.max) * _tmp)) / this.defaults.afterDivisionsStep) * this.defaults.afterDivisionsStep;
+						_tmp = ((x - this.defaults.division) / (100 - this.defaults.division));
+						_x = Math.round((this.defaults.point - (Math.abs(this.defaults.point * (-1) + this.defaults.max) * _tmp)) / this.defaults.afterDivisionStep) * this.defaults.afterDivisionStep;
 
 					}
 
@@ -203,6 +210,46 @@
 			var eventsMove = mobileDetect ? "touchmove" : "mousemove";
 			var eventsEnd = mobileDetect ? "touchend" : "mouseup";
 
+			if (this.defaults.handleMinus) {
+
+				var minus = document.querySelector(this.defaults.handleMinus);
+
+				if (minus) {
+					minus.addEventListener(eventsStart, function (e) {
+
+						e.stopPropagation();
+						e.preventDefault();
+						obj.setValuesOutSide(obj.defaults.value - (obj.defaults.value < obj.defaults.point ? obj.defaults.beforeOutSideClickStep : obj.defaults.afterOutSideClickStep), 'triggerLeft');
+
+					});
+
+					minus.addEventListener(eventsEnd, function (e) {
+						e.stopPropagation();
+						e.preventDefault();
+					});
+				}
+			}
+
+			if (this.defaults.handlePlus) {
+
+				var plus = document.querySelector(this.defaults.handlePlus);
+
+				if (plus) {
+					plus.addEventListener(eventsStart, function (e) {
+
+						e.stopPropagation();
+						e.preventDefault();
+						obj.setValuesOutSide(obj.defaults.value + (obj.defaults.value < obj.defaults.point ? obj.defaults.beforeOutSideClickStep : obj.defaults.afterOutSideClickStep), 'triggerLeft');
+
+					});
+
+					plus.addEventListener(eventsEnd, function (e) {
+						e.stopPropagation();
+						e.preventDefault();
+					});
+				}
+			}
+
 			element.addEventListener('dragstart', function () {
 				return false;
 			});
@@ -245,9 +292,10 @@
 
 			}, false);
 
-			this.tags.slider.addEventListener(eventsEnd, function (e) {
+			this.tags.handleRange.addEventListener(eventsEnd, function (e) {
 
 				e.stopPropagation();
+				e.preventDefault();
 				obj.values[trigger] = false;
 
 				x = (((mobileDetect ? e.touches[0].pageX : e.pageX) - obj.tags.slider.getBoundingClientRect().left) / obj.values.size) * 100;
@@ -262,7 +310,7 @@
 
 				obj.setValues(x);
 
-			});
+			}, false);
 
 			return this;
 

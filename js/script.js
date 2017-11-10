@@ -14,10 +14,12 @@ $(document).ready(function () {
 			element: document.querySelector('.js-slider'),
 			min: parseInt(jsSlider.getAttribute('data-min')),
 			max: parseInt(jsSlider.getAttribute('data-max')),
-			divisions: parseInt(jsSlider.getAttribute('data-divisions')),
+			division: parseInt(jsSlider.getAttribute('data-division')),
 			point: parseInt(jsSlider.getAttribute('data-point')),
-			beforeDivisionsStep: parseInt(jsSlider.getAttribute('data-beforedivisionsstep')),
-			afterDivisionsStep: parseInt(jsSlider.getAttribute('data-afterdivisionsstep')),
+			beforeDivisionStep: parseInt(jsSlider.getAttribute('data-beforedivisionstep')),
+			afterDivisionStep: parseInt(jsSlider.getAttribute('data-afterdivisionstep')),
+			handleMinus: '.slider__handle-minus',
+			handlePlus: '.slider__handle-plus',
 			beforeClick: parseInt(jsSlider.getAttribute('data-beforeclick')),
 			afterClick: parseInt(jsSlider.getAttribute('data-afterclick')),
 			create: function (slider, opts, handleLeft, mobileDetect) {
@@ -31,22 +33,6 @@ $(document).ready(function () {
 				handleLeft.appendChild(opts.tags.minus);
 				handleLeft.appendChild(opts.tags.text);
 				handleLeft.appendChild(opts.tags.plus);
-
-				opts.tags.minus.addEventListener((mobileDetect ? 'touchstart' : 'mousedown'), function (e) {
-
-					e.stopPropagation();
-
-					obj.setValuesOutSide(false);
-
-				});
-
-				opts.tags.plus.addEventListener((mobileDetect ? 'touchstart' : 'mousedown'), function (e) {
-
-					e.stopPropagation();
-
-					obj.setValuesOutSide(true);
-
-				});
 
 			},
 			slide: function (x, opts, handleLeft) {

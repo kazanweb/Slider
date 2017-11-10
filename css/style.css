@@ -278,7 +278,7 @@ dfn[title] {
 }
 .slider:before {
   position: absolute;
-  left: 70%;
+  left: 50%;
   bottom: 100%;
   height: 10px;
   width: 1px;
@@ -318,4 +318,11 @@ dfn[title] {
 }
 .slider__handle-text {
   padding: 3px 10px;
+}
+.slider__range {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
 }
