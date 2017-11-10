@@ -58,7 +58,6 @@
 
 			this.reinit();
 			this.events(this.tags.handleLeft, 'triggerLeft');
-			this.setValuesOutSide(this.defaults.value);
 
 			return this;
 
@@ -196,6 +195,7 @@
 		reinit: function () {
 
 			this.getValues();
+			this.setValuesOutSide(this.defaults.value);
 			return this;
 
 		},
