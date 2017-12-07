@@ -84,7 +84,7 @@
 
 		},
 
-		setValuesOutSide: function (value, trigger) {
+		setValuesOutSide: function (value) {
 
 			var _x;
 			this.defaults.value = value;
@@ -94,11 +94,7 @@
 				if (this.defaults.value <= this.defaults.point) {
 					_x = this.defaults.value / this.defaults.point * this.defaults.division;
 				} else {
-<<<<<<< HEAD
 					_x = (((this.defaults.value - this.defaults.point) / (this.defaults.max - this.defaults.point)) * (100 - this.defaults.division)) + this.defaults.division;
-=======
-					_x = (((((this.defaults.value - this.defaults.point) / (this.defaults.max - this.defaults.point)) * 100) / 100) * this.defaults.division) + this.defaults.division;
->>>>>>> cb168f64f5ff236434a5a23be23db7d94a613fc9
 				}
 			} else {
 				_x = (this.defaults.value / this.defaults.max) * 100;
@@ -112,7 +108,7 @@
 				this.defaults.value = this.defaults.max;
 			}
 
-			this.values[trigger] = false;
+
 			this.tags.handleLeft.style.left = _x + '%';
 
 			this.defaults.slide(this.defaults.value, this.defaults, this.tags.handleLeft);
@@ -223,17 +219,14 @@
 
 						e.stopPropagation();
 						e.preventDefault();
-<<<<<<< HEAD
-						obj.setValuesOutSide(obj.defaults.value - (obj.defaults.value <= obj.defaults.point ? obj.defaults.beforeOutSideClickStep : obj.defaults.afterOutSideClickStep), 'triggerLeft');
-=======
-						obj.setValuesOutSide(obj.defaults.value - (obj.defaults.value < obj.defaults.point ? obj.defaults.beforeOutSideClickStep : obj.defaults.afterOutSideClickStep), 'triggerLeft');
->>>>>>> cb168f64f5ff236434a5a23be23db7d94a613fc9
+						obj.setValuesOutSide(obj.defaults.value - (obj.defaults.value <= obj.defaults.point ? obj.defaults.beforeOutSideClickStep : obj.defaults.afterOutSideClickStep));
 
 					});
 
 					minus.addEventListener(eventsEnd, function (e) {
 						e.stopPropagation();
 						e.preventDefault();
+						obj.values[trigger] = false;
 					});
 				}
 			}
@@ -247,17 +240,14 @@
 
 						e.stopPropagation();
 						e.preventDefault();
-<<<<<<< HEAD
-						obj.setValuesOutSide(obj.defaults.value + (obj.defaults.value <= obj.defaults.point ? obj.defaults.beforeOutSideClickStep : obj.defaults.afterOutSideClickStep), 'triggerLeft');
-=======
-						obj.setValuesOutSide(obj.defaults.value + (obj.defaults.value < obj.defaults.point ? obj.defaults.beforeOutSideClickStep : obj.defaults.afterOutSideClickStep), 'triggerLeft');
->>>>>>> cb168f64f5ff236434a5a23be23db7d94a613fc9
+						obj.setValuesOutSide(obj.defaults.value + (obj.defaults.value <= obj.defaults.point ? obj.defaults.beforeOutSideClickStep : obj.defaults.afterOutSideClickStep));
 
 					});
 
 					plus.addEventListener(eventsEnd, function (e) {
 						e.stopPropagation();
 						e.preventDefault();
+						obj.values[trigger] = false;
 					});
 				}
 			}
