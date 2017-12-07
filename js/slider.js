@@ -94,7 +94,11 @@
 				if (this.defaults.value <= this.defaults.point) {
 					_x = this.defaults.value / this.defaults.point * this.defaults.division;
 				} else {
+<<<<<<< HEAD
+					_x = (((this.defaults.value - this.defaults.point) / (this.defaults.max - this.defaults.point)) * (100 - this.defaults.division)) + this.defaults.division;
+=======
 					_x = (((((this.defaults.value - this.defaults.point) / (this.defaults.max - this.defaults.point)) * 100) / 100) * this.defaults.division) + this.defaults.division;
+>>>>>>> cb168f64f5ff236434a5a23be23db7d94a613fc9
 				}
 			} else {
 				_x = (this.defaults.value / this.defaults.max) * 100;
@@ -219,7 +223,11 @@
 
 						e.stopPropagation();
 						e.preventDefault();
+<<<<<<< HEAD
+						obj.setValuesOutSide(obj.defaults.value - (obj.defaults.value <= obj.defaults.point ? obj.defaults.beforeOutSideClickStep : obj.defaults.afterOutSideClickStep), 'triggerLeft');
+=======
 						obj.setValuesOutSide(obj.defaults.value - (obj.defaults.value < obj.defaults.point ? obj.defaults.beforeOutSideClickStep : obj.defaults.afterOutSideClickStep), 'triggerLeft');
+>>>>>>> cb168f64f5ff236434a5a23be23db7d94a613fc9
 
 					});
 
@@ -239,7 +247,11 @@
 
 						e.stopPropagation();
 						e.preventDefault();
+<<<<<<< HEAD
+						obj.setValuesOutSide(obj.defaults.value + (obj.defaults.value <= obj.defaults.point ? obj.defaults.beforeOutSideClickStep : obj.defaults.afterOutSideClickStep), 'triggerLeft');
+=======
 						obj.setValuesOutSide(obj.defaults.value + (obj.defaults.value < obj.defaults.point ? obj.defaults.beforeOutSideClickStep : obj.defaults.afterOutSideClickStep), 'triggerLeft');
+>>>>>>> cb168f64f5ff236434a5a23be23db7d94a613fc9
 
 					});
 
